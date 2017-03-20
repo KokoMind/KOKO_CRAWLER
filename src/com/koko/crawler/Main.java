@@ -1,11 +1,15 @@
 package com.koko.crawler;
 
-import com.koko.crawler.Fetcher;
+import com.koko.crawler.Crawl;
 
-public class Main {
+import java.io.IOException;
 
-    public static void main(String[] args) {
-	// write your code here
+public class Main
+{
+
+    public static void main(String[] args)
+    {
+        // write your code here
 //        DB mydb = new DB();
 //        int ret = mydb.cache_url("www.google.com","192.168.1.1", "5lty", 1);
 //        if (ret == 0){
@@ -20,6 +24,16 @@ public class Main {
 //
 //        System.out.println(pq.poll().value);
 //        System.out.println(pq.poll().value);
-        System.out.println(Fetcher.internetOn());
+//        System.out.println(Fetcher.internetOn());
+        try
+        {
+            Crawl crawler = new Crawl(args);
+            crawler.run();
+        }
+        catch (IOException e)
+        {
+            System.err.println("Program is terminated due to invalid arguments");
+        }
+
     }
 }

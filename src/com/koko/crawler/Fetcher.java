@@ -1,31 +1,42 @@
 package com.koko.crawler;
 
+import com.koko.crawler.obj.ObjDownloaded;
 import org.jsoup.Jsoup;
 
 import java.net.URL;
 import java.net.URLConnection;
 
 
-/**
- * Created by mg on 3/20/17.
- */
-public class Fetcher {
-    public static String downloadPage(String url) {
+public class Fetcher
+{
+
+    public static ObjDownloaded fetch(String url)
+    {
+        return null;
+    }
+
+    public static String downloadPage(String url)
+    {
         return "";
     }
 
-    public static boolean internetOn() {
-        for (int i = 0; i < 5; i++) {
-            try {
+    public static boolean internetOn()
+    {
+        for (int i = 0; i < 5; i++)
+        {
+            try
+            {
                 URL url = new URL("https://www.google.com/");
                 URLConnection connection = url.openConnection();
                 connection.connect();
                 return true;
-            } catch (Exception e) {
+            }
+            catch (Exception e)
+            {
             }
         }
         return false;
     }
 
-    
+
 }

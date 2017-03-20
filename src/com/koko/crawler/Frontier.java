@@ -1,4 +1,13 @@
 package com.koko.crawler;
 
-public class Frontier {
+import com.koko.crawler.obj.ObjPQueue;
+
+public class Frontier
+{
+
+    public ObjPQueue get_url(int thread_id)
+    {
+
+        return null;
+    }
 }

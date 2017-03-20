@@ -9,7 +9,8 @@ import java.time.LocalDateTime;
 
 import org.apache.commons.codec.digest.DigestUtils;
 
-public class DB {
+public class DB
+{
 
     private Connection connection_crawled = null;
     private Statement statement_crawled = null;
@@ -18,8 +19,10 @@ public class DB {
     private Connection connection_tocrawl = null;
     private Statement statement_tocrawl = null;
 
-    public DB() {
-        try {
+    public DB()
+    {
+        try
+        {
             // create a database connection
             connection_hasher = DriverManager.getConnection("jdbc:sqlite:db/hasher.db");
             statement_hasher = connection_hasher.createStatement();
@@ -30,55 +33,72 @@ public class DB {
             connection_tocrawl = DriverManager.getConnection("jdbc:sqlite:db/tocrawl.db");
             statement_tocrawl = connection_tocrawl.createStatement();
             statement_tocrawl.setQueryTimeout(30);
-        } catch (SQLException e) {
+        }
+        catch (SQLException e)
+        {
             System.err.println(e.getMessage());
         }
     }
 
     @Override
-    public void finalize() {
-        try {
+    public void finalize()
+    {
+        try
+        {
             if (connection_hasher != null)
                 connection_hasher.close();
             if (connection_crawled != null)
                 connection_crawled.close();
             if (connection_tocrawl != null)
                 connection_tocrawl.close();
-        } catch (SQLException e) {
+        }
+        catch (SQLException e)
+        {
             // connection close failed.
             System.err.println(e);
         }
     }
 
-    public int hash(String url) {
-        try {
+    public int hash(String url)
+    {
+        try
+        {
             statement_hasher.executeUpdate("insert into hasher values('" + DigestUtils.sha1Hex(url) + "');");
             return 0;
-        } catch (SQLException e) {
+        }
+        catch (SQLException e)
+        {
             return -1;
         }
     }
 
-    public int cache_url(String url, String dns, String content, int thread_id) {
-        try {
+    public int cache_url(String url, String dns, String content, int thread_id)
+    {
+        try
+        {
             String put = String.valueOf(thread_id) + ",'" + url + "','" + dns + "','" + content + "','" + LocalDateTime.now() + "','" + LocalDateTime.now() + "','false'";
             statement_crawled.executeUpdate("insert into crawled (thread_id,url,dns,content,visited,last_visit,indexed) values(" + put + ");");
             return 0;
-        } catch (SQLException e) {
+        }
+        catch (SQLException e)
+        {
             return -1;
         }
     }
 
     //TODO cache_to_crawl,get_to_crawl,delete_to_crawl
-    public int cache_to_crawl() {
+    public int cache_to_crawl()
+    {
         return 0;
     }
 
-    public int get_to_crawl() {
+    public int get_to_crawl()
+    {
         return 0;
     }
 
-    public int delete_to_crawl() {
+    public int delete_to_crawl()
+    {
         return 0;
     }
 
