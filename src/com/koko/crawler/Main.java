@@ -1,5 +1,7 @@
 package com.koko.crawler;
 
+import com.koko.crawler.Fetcher;
+
 public class Main {
 
     public static void main(String[] args) {
@@ -18,6 +20,6 @@ public class Main {
 //
 //        System.out.println(pq.poll().value);
 //        System.out.println(pq.poll().value);
-        System.out.println("Hello Jsoup!");
+        System.out.println(Fetcher.internetOn());
     }
 }
