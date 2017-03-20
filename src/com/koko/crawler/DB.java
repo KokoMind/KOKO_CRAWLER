@@ -40,6 +40,10 @@ public class DB {
         try {
             if (connection_hasher != null)
                 connection_hasher.close();
+            if (connection_crawled != null)
+                connection_crawled.close();
+            if (connection_tocrawl != null)
+                connection_tocrawl.close();
         } catch (SQLException e) {
             // connection close failed.
             System.err.println(e);
