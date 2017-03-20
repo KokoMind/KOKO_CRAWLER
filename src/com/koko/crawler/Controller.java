@@ -15,7 +15,7 @@ public class Controller
         num_workers = num_threads;
         for (int i = 0; i < num_workers; i++)
         {
-            num_workers = new Worker()
+           // num_workers = new Worker()
         }
     }
 

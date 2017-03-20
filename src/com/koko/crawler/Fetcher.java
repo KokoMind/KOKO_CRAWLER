@@ -5,10 +5,7 @@ import org.jsoup.Jsoup;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
+import java.net.*;
 
 import com.panforge.robotstxt.RobotsTxt;
 
@@ -68,8 +65,18 @@ public class Fetcher {
         }
     }
 
+    public static String extractDNS(String url) {
+        try {
+            InetAddress address = InetAddress.getByName(new URL(url).getHost());
+            return address.getHostAddress();
+        }
+        catch (Exception e) {
+            return null;
+        }
+    }
+
     //public static void main(String[] args) {
-        //System.out.println(checkURL("http://ilpubs.stanford.edu:8090/733/1/2002-9.pdf"));
+        //System.out.println(extractDNS("http://www.facebook.com/"));
     //}
 
 
