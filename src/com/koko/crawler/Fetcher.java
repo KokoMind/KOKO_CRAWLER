@@ -10,6 +10,7 @@ import java.net.*;
 import com.panforge.robotstxt.RobotsTxt;
 
 public class Fetcher {
+    /* Class that will fetch the page, validate that it is of type HTML, extract its contents and hyperlinks */
 
     public static ObjDownloaded fetch(String url) {
         return null;
@@ -33,6 +34,7 @@ public class Fetcher {
     }
 
     public static boolean checkRobots(String url) {
+        /* Check that our crawler satisfies robot exclusion standard */
         try {
             if (url.charAt(url.length() - 1) != '/')
                 url = url + '/';
@@ -69,14 +71,13 @@ public class Fetcher {
         try {
             InetAddress address = InetAddress.getByName(new URL(url).getHost());
             return address.getHostAddress();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             return null;
         }
     }
 
     //public static void main(String[] args) {
-        //System.out.println(extractDNS("http://www.facebook.com/"));
+    //System.out.println(extractDNS("http://www.facebook.com/"));
     //}
 
 
