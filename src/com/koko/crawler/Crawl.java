@@ -5,9 +5,15 @@ import java.io.IOException;
 public class Crawl
 {
 
+    // Mode 0 - init   ,  Mode 1 - cont   ,  Mode 2 - revisit
+    public int mode;
+    public int num_workers;
+
+
     public void run()
     {
-
+        Controller crawler_CEO = new Controller(num_workers, seeds, mode);
+        crawler_CEO.run();
     }
 
     public Crawl(String[] args) throws IOException
@@ -34,6 +40,11 @@ public class Crawl
                 }
                 if (!validFirstArg)
                     return -1;
+                if (args[0].equals("init"))
+                    mode = 0;
+                else if (args[0].equals("cont"))
+                    mode = 1;
+                num_workers = secondArg;
             }
             catch (NumberFormatException e)
             {
@@ -51,6 +62,7 @@ public class Crawl
     public String moods[] = {
             "init",
             "cont",
+            "revisit"
     };
 
     public String seeds[] = {
