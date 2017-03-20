@@ -1,13 +1,13 @@
 package com.koko.crawler;
 
 import com.koko.crawler.obj.ObjDownloaded;
-import org.jsoup.Jsoup;
 
-import java.io.IOException;
+import java.io.File;
 import java.io.InputStream;
 import java.net.*;
 
 import com.panforge.robotstxt.RobotsTxt;
+import org.apache.commons.io.FilenameUtils;
 
 public class Fetcher {
     /* Class that will fetch the page, validate that it is of type HTML, extract its contents and hyperlinks */
@@ -76,8 +76,14 @@ public class Fetcher {
         }
     }
 
+    public static boolean checkExtHTML(String url) {
+        /* check the filename extension either HTML or "" */
+        //Implementations in Java are pieces of crap.
+        return false;
+    }
+
     //public static void main(String[] args) {
-    //System.out.println(extractDNS("http://www.facebook.com/"));
+      //  System.out.println(checkExtHTML("http://ilpubs.stanford.edu"));
     //}
 
 
