@@ -1,5 +1,6 @@
 package com.koko.crawler;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.PriorityBlockingQueue;
@@ -27,6 +28,8 @@ public class Frontier implements IShutdownThreadParent
     private PriorityBlockingQueue<ObjPQueue>[] queues;
     private HashMap<String, Integer>[] attended_websites;
 
+    private int max_to_crawl = 100000;
+
     private ShutdownThread fShutdownThread;
 
     public Frontier(int num_threads, DB db_, Dashboard dash_)
@@ -44,8 +47,8 @@ public class Frontier implements IShutdownThreadParent
         for (int i = 0; i < num_threads; i++)
         {
             threads_prop[i] = new ObjThreadProp();
-            to_serve[i] = new ArrayBlockingQueue<ObjExtractedLink>(100000);
-            queues[i] = new PriorityBlockingQueue<ObjPQueue>(100000);
+            to_serve[i] = new ArrayBlockingQueue<ObjExtractedLink>(max_to_crawl);
+            queues[i] = new PriorityBlockingQueue<ObjPQueue>(max_to_crawl);
             attended_websites[i] = new HashMap<String, Integer>();
         }
 
@@ -141,7 +144,7 @@ public class Frontier implements IShutdownThreadParent
     public void distribute_seeds(ObjExtractedLink[] links)
     {
         System.out.println("Distributing Seeds");
-
+        int accepted_seeds = 0;
         for (ObjExtractedLink link : links)
         {
             System.out.println("Serving a seed");
@@ -150,6 +153,7 @@ public class Frontier implements IShutdownThreadParent
                 continue;
             double value = calc_priority(link.prop);
 
+            accepted_seeds++;
             turn++;
             turn %= num_threads;
             queues[turn].add(new ObjPQueue(link.link.url, link.link.dns, value));
@@ -157,6 +161,7 @@ public class Frontier implements IShutdownThreadParent
             threads_prop[turn].inc_dns();
             threads_prop[turn].setTo_crawl(queues[turn].size());
         }
+        System.out.println("Accepted Seeds = " + String.valueOf(accepted_seeds));
     }
 
     private int get_turn()
@@ -202,10 +207,61 @@ public class Frontier implements IShutdownThreadParent
     public void save_to_crawl()
     {
         System.out.println("Saving To crawl links waaaiiittt");
+        ObjPQueue to_crawl[][] = new ObjPQueue[num_threads][];
+        for (int i = 0; i < num_threads; i++)
+        {
+            to_crawl[i] = new ObjPQueue[queues[i].size()];
+            to_crawl[i] = queues[i].toArray(to_crawl[i]);
+        }
+        int ret = db.cache_to_crawl(to_crawl);
+        if (ret == -1)
+        {
+            System.err.println("Sh2a 3omry ra7 :'(");
+        }
+        else
+        {
+            System.out.println("Saved Successfully 3ashan ana negm");
+        }
     }
 
-    public void load_to_crawl()
+    public void load_to_crawl(String name, Integer num)
     {
         System.out.println("Wait for loading To crawl links");
+        ArrayList<ObjPQueue> ret = db.get_to_crawl(name, num);
+        if (ret == null)
+        {
+            System.err.println("Msh 3ref ageb linkat a7a");
+            System.exit(-1);
+        }
+        else
+        {
+            System.out.println("Loaded Successfully 3ashan ana negm elngomm");
+        }
+        System.out.println("Distributing ToCrawl links");
+        int sz = ret.size();
+        for (int i = 0; i < sz; i++)
+        {
+            ObjPQueue link = ret.get(i);
+
+            boolean dns_found = false;
+
+            for (int j = 0; j < num_threads; j++)
+                if (attended_websites[j].containsKey(link.dns))
+                {
+                    queues[j].offer(new ObjPQueue(link.url, link.dns, link.value));
+                    threads_prop[j].inc_dns();
+                    dns_found = true;
+                    break;
+                }
+
+            if (!dns_found)
+            {
+                int turn_thread = get_turn();
+                queues[turn_thread].offer(new ObjPQueue(link.url, link.dns, link.value));
+                attended_websites[turn_thread].put(link.dns, 1);
+                threads_prop[turn_thread].inc_dns();
+                threads_prop[turn_thread].setTo_crawl(queues[turn_thread].size());
+            }
+        }
     }
 }

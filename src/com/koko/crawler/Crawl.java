@@ -8,11 +8,12 @@ public class Crawl
     // Mode 0 - init   ,  Mode 1 - cont   ,  Mode 2 - revisit
     public int mode;
     public int num_workers;
+    public String tocrawl_db_name = null;
 
 
     public void run()
     {
-        Controller crawler_CEO = new Controller(num_workers, seeds, mode);
+        Controller crawler_CEO = new Controller(num_workers, seeds, mode, tocrawl_db_name);
         crawler_CEO.run();
     }
 
@@ -27,7 +28,7 @@ public class Crawl
     {
         String firstArg;
         int secondArg;
-        if (args.length == 2)
+        if (args.length >= 2)
         {
             try
             {
@@ -40,10 +41,16 @@ public class Crawl
                 }
                 if (!validFirstArg)
                     return -1;
+                if (args[0].equals("cont") && args.length < 3)
+                    return -1;
+
                 if (args[0].equals("init"))
                     mode = 0;
                 else if (args[0].equals("cont"))
+                {
                     mode = 1;
+                    tocrawl_db_name = args[2];
+                }
                 num_workers = secondArg;
             }
             catch (NumberFormatException e)

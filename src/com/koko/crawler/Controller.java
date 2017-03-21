@@ -19,7 +19,7 @@ public class Controller implements IShutdownThreadParent
     private ShutdownThread fShutdownThread;
 
 
-    public Controller(int num_threads, String[] seeds, int mode)
+    public Controller(int num_threads, String[] seeds, int mode, String to_crawl_db_name)
     {
         num_workers = num_threads;
         workers = new Worker[num_threads];
@@ -33,16 +33,15 @@ public class Controller implements IShutdownThreadParent
         }
         System.out.println("Workers Created");
 
-        ObjExtractedLink links[] = setup_seeds(seeds);
-
         if (mode == 0) // Mode init
         {
+            ObjExtractedLink links[] = setup_seeds(seeds);
             frontier.distribute_seeds(links);
             System.out.println("Seeds distributed");
         }
         else if (mode == 1) //Mode cont
         {
-            frontier.load_to_crawl();
+            frontier.load_to_crawl(to_crawl_db_name, null);
         }
         //For interrupt
         fShutdownThread = new ShutdownThread(this);
