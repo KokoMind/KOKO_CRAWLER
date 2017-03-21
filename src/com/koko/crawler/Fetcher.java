@@ -1,26 +1,23 @@
 package com.koko.crawler;
 
 import com.koko.crawler.obj.ObjDownloaded;
-
-import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.*;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 
 import com.koko.crawler.obj.ObjLink;
-import com.panforge.robotstxt.RobotsTxt;
 import com.shekhargulati.urlcleaner.UrlCleaner;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import com.trigonic.jrobotx.RobotExclusion;
 
 public class Fetcher {
     /* Class that will fetch the page, validate that it is of type HTML, extract its contents and hyperlinks */
 
-
-    public static boolean internetOn() {
+    private static boolean internetOn() {
         for (int i = 0; i < 5; i++) {
             try {
                 URL url = new URL("https://www.google.com/");
@@ -33,20 +30,18 @@ public class Fetcher {
         return false;
     }
 
-    public static boolean checkRobots(String url) {
+    private static boolean checkRobots(String url) {
         /* Check that our crawler satisfies robot exclusion standard */
         try {
-            if (url.charAt(url.length() - 1) != '/')
-                url = url + '/';
-            InputStream robotsTxtStream = new URL(url + "robots.txt").openStream();
-            RobotsTxt robotsTxt = RobotsTxt.read(robotsTxtStream);
-            return robotsTxt.query("*", "/");
+            URL urll = new URL(url);
+            RobotExclusion robotExclusion = new RobotExclusion();
+            return robotExclusion.allows(urll,"*");
         } catch (Exception e) {
             return true;
         }
     }
 
-    public static boolean checkURL(String url) {
+    private static boolean checkURL(String url) {
         /* Checks that URL is alive and of has a response of type html. */
         while (true) {
             try {
@@ -76,26 +71,37 @@ public class Fetcher {
         }
     }
 
-    public static boolean checkExtHTML(String url) {
-        /* check the filename extension either HTML or "" */
-        //Implementations in Java are pieces of crap.
-        String sep = "\\", altsep = "/", extsep = ".";
-        int sepIndex = url.lastIndexOf(sep);
-        int altsepIndex = url.lastIndexOf(altsep);
-        sepIndex = Math.max(sepIndex, altsepIndex);
+    private static boolean checkExtHTML(String url) throws MalformedURLException {
+        /* Check the filename extension either HTML or "" */
+        URL urll = new URL(url);
+        String extension = Fetcher.getURLExtension(urll.getPath());
+        String[] targets = {".htm", ".html", ".php", ".aspx", ""};
+        for (String target : targets) {
+            if (extension.equals(target))
+                return true;
+        }
+        return false;
+    }
 
+    private static String getURLExtension(String url) {
+        /* Get the extension of the url: .html, .pdf ..etc. */
+        String sep = "/", extsep = ".";
+        int sepIndex = url.lastIndexOf(sep);
         int dotIndex = url.lastIndexOf(extsep);
         if (dotIndex > sepIndex) {   //skip all leading dots
             int filenameIndex = sepIndex + 1;
             while (filenameIndex < dotIndex) {
-                if (!url.substring(filenameIndex, filenameIndex + 1).equals(extsep))
-                    return url[:dotIndex],p[dotIndex:];
+                if (!(url.substring(filenameIndex, filenameIndex + 1).equals(extsep))) {
+                    return url.substring(dotIndex);
+
+                }
                 filenameIndex += 1;
             }
-            return false;
         }
+        return "";
+    }
 
-    public static Document downloadPage(String url) {
+    private static Document downloadPage(String url) {
         if (Fetcher.checkURL(url) && Fetcher.checkRobots(url)) {
             try {
                 return Jsoup.connect(url).get();
@@ -113,23 +119,22 @@ public class Fetcher {
     }
 
     public static ObjDownloaded fetch(String url) {
-        Document soup = Fetcher.downloadPage(url);
-        return null;
-    }
-
-    public static String testfetch(String url) {
         try {
+            int threshold = 10;         //To accept a document, it must has length >= threshold
             Document soup = Fetcher.downloadPage(url);
-            String content = extractContent(soup);
-            ObjLink[] links = null;
-            links = extractLinks(soup).toArray(links);
-            return null;
+            if (soup == null)
+                return null;
+            String content = Fetcher.extractContent(soup);
+            if (content.length() < threshold)
+                return null;
+            ObjLink[] links = extractLinks(soup).toArray(null);
+            return new ObjDownloaded(links, content);
         } catch (Exception e) {
             return null;
         }
     }
 
-    private static ArrayList<ObjLink> extractLinks(Document soup) {
+    private static ArrayList<ObjLink> extractLinks(Document soup) throws MalformedURLException {
         Elements links = soup.select("a");
         ArrayList<ObjLink> stringLinks = new ArrayList<>();
         for (Element link : links) {
@@ -142,13 +147,7 @@ public class Fetcher {
     }
 
 
-    public static String extractContent(Document soup) throws UnsupportedEncodingException {
+    private static String extractContent(Document soup) throws UnsupportedEncodingException {
         return extractASCIIOnly(soup.text()).trim().replaceAll(" +", " ");
     }
-
-    public static void main(String[] args) {
-        testfetch("https://en.wikipedia.org/wiki/URL_normalization");
-    }
-
-
 }
