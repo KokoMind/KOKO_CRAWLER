@@ -13,6 +13,7 @@ public class Main
         {
             Crawl crawler = new Crawl(args);
             crawler.run();
+            System.out.println("BYE BYE Atmna akon naf3tak :')");
         }
         catch (IOException e)
         {
