@@ -21,12 +21,16 @@ public class DB
         try
         {
             // create a database connection
-            connection_hasher = DriverManager.getConnection("jdbc:sqlite:db/hasher.db");
+            connection_hasher = DriverManager.getConnection("jdbc:sqlite::memory:");
             statement_hasher = connection_hasher.createStatement();
             statement_hasher.setQueryTimeout(30);
             connection_crawled = DriverManager.getConnection("jdbc:sqlite:db/crawled.db");
             statement_crawled = connection_crawled.createStatement();
             statement_crawled.setQueryTimeout(30);
+
+            String sql_create_table = "CREATE TABLE hasher (hash VARCHAR (42) NOT NULL PRIMARY KEY UNIQUE );";
+            statement_hasher.executeUpdate(sql_create_table);
+
         }
         catch (SQLException e)
         {

@@ -38,14 +38,15 @@ public class Worker extends Thread implements IShutdownThreadParent
     public void shutdown()
     {
         // code to cleanly shutdown my worker.
-        System.out.println("Thread " + id + " exiting.");
+        //System.out.println("Thread " + id + " exiting.");
+        keepOn = false;
     }
 
     public void run()
     {
         try
         {
-            while (true)
+            while (keepOn)
             {
                 System.out.println("Next_Url___");
                 ObjPQueue obj_pq = frontier.get_url(id);

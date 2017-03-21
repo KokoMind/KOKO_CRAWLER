@@ -62,6 +62,7 @@ public class Frontier implements IShutdownThreadParent
     {
         // code to cleanly shutdown your Parent instance.
         System.out.println("Frontier Exit");
+        keepOn = false;
     }
 
     public void push_to_serve(ObjExtractedLink extracted_links[], int thread_id)
