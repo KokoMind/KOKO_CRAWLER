@@ -4,8 +4,6 @@ import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
-import com.koko.crawler.obj.ObjPQueue;
-import com.sun.prism.impl.Disposer;
 import org.apache.commons.codec.digest.DigestUtils;
 
 public class DB

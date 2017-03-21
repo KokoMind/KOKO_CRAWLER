@@ -1,4 +1,4 @@
-package com.koko.crawler.interrupt_shut;
+package com.koko.crawler;
 
 
 public class ShutdownThread extends Thread

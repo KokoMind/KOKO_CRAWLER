@@ -7,12 +7,6 @@ import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-import com.koko.crawler.interrupt_shut.*;
-import com.koko.crawler.obj.ObjExtractedLink;
-import com.koko.crawler.obj.ObjLinkProp;
-import com.koko.crawler.obj.ObjPQueue;
-import com.koko.crawler.obj.ObjThreadProp;
-
 public class Frontier implements IShutdownThreadParent
 {
 

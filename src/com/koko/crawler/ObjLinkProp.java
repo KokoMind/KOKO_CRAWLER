@@ -1,4 +1,4 @@
-package com.koko.crawler.obj;
+package com.koko.crawler;
 
 
 public class ObjLinkProp

@@ -1,12 +1,10 @@
 package com.koko.crawler;
 
-import com.koko.crawler.obj.ObjDownloaded;
 import java.io.UnsupportedEncodingException;
 import java.net.*;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 
-import com.koko.crawler.obj.ObjLink;
 import com.shekhargulati.urlcleaner.UrlCleaner;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;

@@ -1,11 +1,6 @@
 package com.koko.crawler;
 
 
-import com.koko.crawler.interrupt_shut.IShutdownThreadParent;
-import com.koko.crawler.obj.ObjExtractedLink;
-import com.koko.crawler.obj.ObjLink;
-import com.koko.crawler.interrupt_shut.*;
-
 public class Controller implements IShutdownThreadParent
 {
 

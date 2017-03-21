@@ -1,10 +1,5 @@
 package com.koko.crawler;
 
-import com.koko.crawler.obj.ObjDownloaded;
-import com.koko.crawler.obj.ObjExtractedLink;
-import com.koko.crawler.obj.ObjPQueue;
-import com.koko.crawler.interrupt_shut.*;
-
 public class Worker extends Thread implements IShutdownThreadParent
 {
 
