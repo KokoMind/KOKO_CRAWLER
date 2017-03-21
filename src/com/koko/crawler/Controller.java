@@ -1,10 +1,12 @@
 package com.koko.crawler;
 
 
+import com.koko.crawler.interrupt_shut.IShutdownThreadParent;
 import com.koko.crawler.obj.ObjExtractedLink;
 import com.koko.crawler.obj.ObjLink;
+import com.koko.crawler.interrupt_shut.*;
 
-public class Controller
+public class Controller implements IShutdownThreadParent
 {
 
     public int num_workers;
@@ -13,6 +15,9 @@ public class Controller
     public DB db;
     public Dashboard dash;
     private volatile boolean keepOn = true;
+
+    private ShutdownThread fShutdownThread;
+
 
     public Controller(int num_threads, String[] seeds, int mode)
     {
@@ -39,11 +44,34 @@ public class Controller
         {
             frontier.load_to_crawl();
         }
+        //For interrupt
+        fShutdownThread = new ShutdownThread(this);
+        Runtime.getRuntime().addShutdownHook(fShutdownThread);
+    }
+
+    @Override
+    public void shutdown()
+    {
+        // code to cleanly shutdown my Controller.
+        try
+        {
+            for (int i = 0; i < num_workers; i++)
+                workers[i].join();
+            System.out.println("All Workers Exit");
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        finally
+        {
+            frontier.save_to_crawl();
+            System.out.println("Saved EL7");
+        }
     }
 
     public void run()
     {
-        Runtime.getRuntime().addShutdownHook(new RunWhenShuttingDown());
         try
         {
             for (int i = 0; i < num_workers; i++)
@@ -86,21 +114,4 @@ public class Controller
         System.out.println("Number of seeds = " + String.valueOf(ret.length));
         return ret;
     }
-
-    public class RunWhenShuttingDown extends Thread
-    {
-        public void run()
-        {
-//            System.out.println("Control-C caught. Shutting down...");
-            try
-            {
-                Thread.sleep(1000);
-            }
-            catch (InterruptedException e)
-            {
-                e.printStackTrace();
-            }
-        }
-    }
-
 }
