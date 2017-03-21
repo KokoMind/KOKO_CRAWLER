@@ -20,7 +20,7 @@ public class DB
             connection_hasher = DriverManager.getConnection("jdbc:sqlite::memory:");
             statement_hasher = connection_hasher.createStatement();
             statement_hasher.setQueryTimeout(30);
-            connection_crawled = DriverManager.getConnection("jdbc:sqlite:crawled.db");
+            connection_crawled = DriverManager.getConnection("jdbc:sqlite:./crawled.db");
             statement_crawled = connection_crawled.createStatement();
             statement_crawled.setQueryTimeout(30);
 
@@ -93,7 +93,7 @@ public class DB
         Connection connection_tocrawl = null;
         try
         {
-            connection_tocrawl = DriverManager.getConnection("jdbc:sqlite:db/tocrawl-" + LocalDateTime.now() + ".db");
+            connection_tocrawl = DriverManager.getConnection("jdbc:sqlite:tocrawl-" + LocalDateTime.now() + ".db");
 //            connection_tocrawl = DriverManager.getConnection("jdbc:sqlite:db/tocrawl.db");
             Statement statement_tocrawl = connection_tocrawl.createStatement();
             statement_tocrawl.setQueryTimeout(30);
