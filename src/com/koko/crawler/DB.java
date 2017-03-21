@@ -68,12 +68,22 @@ public class DB
     {
         try
         {
-            String put = String.valueOf(thread_id) + ",'" + url + "','" + dns + "','" + content + "','" + LocalDateTime.now() + "','" + LocalDateTime.now() + "','false'";
-            statement_crawled.executeUpdate("insert into crawled (thread_id,url,dns,content,visited,last_visit,indexed) values(" + put + ");");
+            String query = "INSERT INTO crawled (thread_id,url,dns,content,visited,last_visit,indexed) VALUES (?, ?, ?, ?, ?, ?, ?)";
+            PreparedStatement ps = connection_crawled.prepareStatement(query);
+            ps.setInt(1, thread_id);
+            ps.setString(2, url);
+            ps.setString(3, dns);
+            ps.setString(4, content);
+            ps.setString(5, LocalDateTime.now().toString());
+            ps.setString(6, LocalDateTime.now().toString());
+            ps.setInt(7, 0);
+            ps.addBatch();
+            ps.executeBatch();
             return 0;
         }
         catch (SQLException e)
         {
+            e.printStackTrace();
             return -1;
         }
     }
