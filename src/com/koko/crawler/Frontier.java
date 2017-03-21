@@ -149,7 +149,7 @@ public class Frontier implements IShutdownThreadParent
         {
             System.out.println("Serving a seed");
 
-            if (/*db.hash(link.link.url) == -1 || */link.link.dns == null)
+            if (db.hash(link.link.url) == -1 || link.link.dns == null)
                 continue;
             double value = calc_priority(link.prop);
 
