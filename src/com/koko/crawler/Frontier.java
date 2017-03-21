@@ -108,7 +108,7 @@ public class Frontier implements IShutdownThreadParent
             {
                 ObjExtractedLink link = pop_to_distribute();
 
-                System.out.println("Serving a link");
+//                System.out.println("Serving a link");
 
                 if (db.hash(link.link.url) == -1 || link.link.dns == null)
                     continue;
