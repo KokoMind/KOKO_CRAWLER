@@ -127,9 +127,12 @@ public class Fetcher {
             String content = Fetcher.extractContent(soup);
             if (content.length() < threshold)
                 return null;
-            ObjLink[] links = extractLinks(soup).toArray(null);
+            ArrayList<ObjLink> linksArr = extractLinks(soup);
+            ObjLink[] links = new ObjLink[linksArr.size()];
+            links = linksArr.toArray(links);
             return new ObjDownloaded(links, content);
         } catch (Exception e) {
+            e.printStackTrace();
             return null;
         }
     }
@@ -138,10 +141,13 @@ public class Fetcher {
         Elements links = soup.select("a");
         ArrayList<ObjLink> stringLinks = new ArrayList<>();
         for (Element link : links) {
-            String absHref = link.attr("abs:href"); // "http://jsoup.org/
-            String normalizedURL = UrlCleaner.normalizeUrl(absHref);
-            if (Fetcher.checkExtHTML(normalizedURL))
-                stringLinks.add(new ObjLink(normalizedURL, Fetcher.extractDNS(normalizedURL)));
+            try {
+                String absHref = link.attr("abs:href"); // "http://jsoup.org/
+                String normalizedURL = UrlCleaner.normalizeUrl(absHref);
+                if (Fetcher.checkExtHTML(normalizedURL))
+                    stringLinks.add(new ObjLink(normalizedURL, Fetcher.extractDNS(normalizedURL)));
+            }
+            catch(Exception e) {}
         }
         return stringLinks;
     }
@@ -150,4 +156,8 @@ public class Fetcher {
     private static String extractContent(Document soup) throws UnsupportedEncodingException {
         return extractASCIIOnly(soup.text()).trim().replaceAll(" +", " ");
     }
+
+    //public static void main(String[] args){
+  //      Fetcher.fetch("https://en.wikipedia.org");
+   // }
 }
