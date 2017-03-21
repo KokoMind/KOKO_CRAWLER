@@ -2,36 +2,65 @@ package com.koko.crawler;
 
 import java.io.IOException;
 
-public class Crawl {
+public class Crawl
+{
 
-    public void run() {
+    // Mode 0 - init   ,  Mode 1 - cont   ,  Mode 2 - revisit
+    public int mode;
+    public int num_workers;
+    public String tocrawl_db_name = null;
 
+
+    public void run()
+    {
+        Controller crawler_CEO = new Controller(num_workers, seeds, mode, tocrawl_db_name);
+        crawler_CEO.run();
     }
 
-    public Crawl(String[] args) throws IOException {
+    public Crawl(String[] args) throws IOException
+    {
         if (check_args(args) == -1)
             throw new IOException();
         System.out.println("Arguments are parsed successfully and we are Ready to crawl");
     }
 
-    public int check_args(String[] args) {
+    public int check_args(String[] args)
+    {
         String firstArg;
         int secondArg;
-        if (args.length == 2) {
-            try {
+        if (args.length >= 2)
+        {
+            try
+            {
                 boolean validFirstArg = false;
                 secondArg = Integer.parseInt(args[1]);
-                for (String s : moods) {
+                for (String s : moods)
+                {
                     if (s.equals(args[0]))
                         validFirstArg = true;
                 }
                 if (!validFirstArg)
                     return -1;
-            } catch (NumberFormatException e) {
+                if (args[0].equals("cont") && args.length < 3)
+                    return -1;
+
+                if (args[0].equals("init"))
+                    mode = 0;
+                else if (args[0].equals("cont"))
+                {
+                    mode = 1;
+                    tocrawl_db_name = args[2];
+                }
+                num_workers = secondArg;
+            }
+            catch (NumberFormatException e)
+            {
                 System.err.println("Argument" + args[1] + " must be an integer.");
                 return -1;
             }
-        } else {
+        }
+        else
+        {
             return -1;
         }
         return 0;
@@ -40,6 +69,7 @@ public class Crawl {
     public String moods[] = {
             "init",
             "cont",
+            "revisit"
     };
 
     public String seeds[] = {

@@ -3,8 +3,9 @@ package com.koko.crawler;
 import com.koko.crawler.obj.ObjDownloaded;
 import com.koko.crawler.obj.ObjExtractedLink;
 import com.koko.crawler.obj.ObjPQueue;
+import com.koko.crawler.interrupt_shut.*;
 
-public class Worker extends Thread
+public class Worker extends Thread implements IShutdownThreadParent
 {
 
     private Thread t;
@@ -15,6 +16,10 @@ public class Worker extends Thread
     private Dashboard dash;
     private int crawled = 0;
     private int refused = 0;
+    private volatile boolean keepOn = true;
+
+    private ShutdownThread fShutdownThread;
+
 
     public Worker(int thread_id, String thread_name, Frontier front, DB db_, Dashboard dash_)
     {
@@ -24,11 +29,20 @@ public class Worker extends Thread
         db = db_;
         dash = dash_;
         this.setDaemon(true);
+        //For interrupt
+        fShutdownThread = new ShutdownThread(this);
+        Runtime.getRuntime().addShutdownHook(fShutdownThread);
+    }
+
+    @Override
+    public void shutdown()
+    {
+        // code to cleanly shutdown my worker.
+        System.out.println("Thread " + id + " exiting.");
     }
 
     public void run()
     {
-
         try
         {
             while (true)
@@ -41,7 +55,7 @@ public class Worker extends Thread
                     continue;
                 }
                 System.out.println("Downloading");
-                ObjDownloaded obj_d = Fetcher.fetch(obj_pq.url);
+                ObjDownloaded obj_d = null;//Fetcher.fetch(obj_pq.url);
                 if (obj_d == null)
                 {
                     this.refused++;
@@ -75,5 +89,4 @@ public class Worker extends Thread
             t.start();
         }
     }
-
 }

@@ -1,12 +1,11 @@
 package com.koko.crawler;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 
+import com.koko.crawler.obj.ObjPQueue;
+import com.sun.prism.impl.Disposer;
 import org.apache.commons.codec.digest.DigestUtils;
 
 public class DB
@@ -16,8 +15,6 @@ public class DB
     private Statement statement_crawled = null;
     private Connection connection_hasher = null;
     private Statement statement_hasher = null;
-    private Connection connection_tocrawl = null;
-    private Statement statement_tocrawl = null;
 
     public DB()
     {
@@ -30,9 +27,6 @@ public class DB
             connection_crawled = DriverManager.getConnection("jdbc:sqlite:db/crawled.db");
             statement_crawled = connection_crawled.createStatement();
             statement_crawled.setQueryTimeout(30);
-            connection_tocrawl = DriverManager.getConnection("jdbc:sqlite:db/tocrawl.db");
-            statement_tocrawl = connection_tocrawl.createStatement();
-            statement_tocrawl.setQueryTimeout(30);
         }
         catch (SQLException e)
         {
@@ -49,8 +43,6 @@ public class DB
                 connection_hasher.close();
             if (connection_crawled != null)
                 connection_crawled.close();
-            if (connection_tocrawl != null)
-                connection_tocrawl.close();
         }
         catch (SQLException e)
         {
@@ -86,20 +78,75 @@ public class DB
         }
     }
 
-    //TODO cache_to_crawl,get_to_crawl,delete_to_crawl
-    public int cache_to_crawl()
+    public int cache_to_crawl(ObjPQueue[][] arr)
     {
-        return 0;
+        Connection connection_tocrawl = null;
+        try
+        {
+            connection_tocrawl = DriverManager.getConnection("jdbc:sqlite:db/tocrawl-" + LocalDateTime.now() + ".db");
+//            connection_tocrawl = DriverManager.getConnection("jdbc:sqlite:db/tocrawl.db");
+            Statement statement_tocrawl = connection_tocrawl.createStatement();
+            statement_tocrawl.setQueryTimeout(30);
+
+            String sql_create_table = "CREATE TABLE tocrawl ( id INTEGER NOT NULL PRIMARY KEY, url TEXT NOT NULL, dns VARCHAR (255) NOT NULL, value REAL NOT NULL);";
+            statement_tocrawl.executeUpdate(sql_create_table);
+
+            String query = "INSERT INTO tocrawl (url, dns, value) VALUES (?, ?, ?)";
+            PreparedStatement ps = connection_tocrawl.prepareStatement(query);
+            for (ObjPQueue[] array : arr)
+            {
+                for (ObjPQueue link : array)
+                {
+                    ps.setString(1, link.url);
+                    ps.setString(2, link.dns);
+                    ps.setDouble(3, link.value);
+                    ps.addBatch();
+                }
+            }
+            ps.executeBatch();
+            connection_tocrawl.close();
+            return 0;
+        }
+        catch (SQLException e)
+        {
+            if (connection_tocrawl != null)
+                try
+                {
+                    connection_tocrawl.close();
+                }
+                catch (SQLException e1)
+                {
+                    e1.printStackTrace();
+                }
+            e.printStackTrace();
+            return -1;
+        }
     }
 
-    public int get_to_crawl()
+    public ArrayList<ObjPQueue> get_to_crawl(String name, Integer num)
     {
-        return 0;
+        try
+        {
+            Connection connection_tocrawl = DriverManager.getConnection("jdbc:sqlite:db/" + name);
+            Statement statement_tocrawl = connection_tocrawl.createStatement();
+            statement_tocrawl.setQueryTimeout(30);
+            System.out.println("Loading TOCRAWL links");
+            ResultSet rs = null;
+            ArrayList<ObjPQueue> ret = new ArrayList<ObjPQueue>();
+            if (num == null)
+                rs = statement_tocrawl.executeQuery("SELECT * FROM tocrawl;");
+            else
+                rs = statement_tocrawl.executeQuery("SELECT * FROM tocrawl where id < " + String.valueOf(num));
+            while (rs.next())
+            {
+                ret.add(new ObjPQueue(rs.getString("url"), rs.getString("dns"), rs.getDouble("value")));
+            }
+            return ret;
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+            return null;
+        }
     }
-
-    public int delete_to_crawl()
-    {
-        return 0;
-    }
-
 }
