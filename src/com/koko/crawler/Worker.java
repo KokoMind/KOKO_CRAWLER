@@ -3,8 +3,9 @@ package com.koko.crawler;
 import com.koko.crawler.obj.ObjDownloaded;
 import com.koko.crawler.obj.ObjExtractedLink;
 import com.koko.crawler.obj.ObjPQueue;
+import com.koko.crawler.interrupt_shut.*;
 
-public class Worker extends Thread
+public class Worker extends Thread implements IShutdownThreadParent
 {
 
     private Thread t;
@@ -17,6 +18,9 @@ public class Worker extends Thread
     private int refused = 0;
     private volatile boolean keepOn = true;
 
+    private ShutdownThread fShutdownThread;
+
+
     public Worker(int thread_id, String thread_name, Frontier front, DB db_, Dashboard dash_)
     {
         id = thread_id;
@@ -25,11 +29,20 @@ public class Worker extends Thread
         db = db_;
         dash = dash_;
         this.setDaemon(true);
+        //For interrupt
+        fShutdownThread = new ShutdownThread(this);
+        Runtime.getRuntime().addShutdownHook(fShutdownThread);
+    }
+
+    @Override
+    public void shutdown()
+    {
+        // code to cleanly shutdown my worker.
+        System.out.println("Thread " + id + " exiting.");
     }
 
     public void run()
     {
-        Runtime.getRuntime().addShutdownHook(new RunWhenShuttingDown());
         try
         {
             while (true)
@@ -76,22 +89,4 @@ public class Worker extends Thread
             t.start();
         }
     }
-
-    public class RunWhenShuttingDown extends Thread
-    {
-        public void run()
-        {
-//            System.out.println("Control-C caught. Shutting down...");
-            keepOn = false;
-            try
-            {
-                Thread.sleep(10);
-            }
-            catch (InterruptedException e)
-            {
-                e.printStackTrace();
-            }
-        }
-    }
-
 }

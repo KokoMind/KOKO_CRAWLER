@@ -6,12 +6,13 @@ import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 
+import com.koko.crawler.interrupt_shut.*;
 import com.koko.crawler.obj.ObjExtractedLink;
 import com.koko.crawler.obj.ObjLinkProp;
 import com.koko.crawler.obj.ObjPQueue;
 import com.koko.crawler.obj.ObjThreadProp;
 
-public class Frontier
+public class Frontier implements IShutdownThreadParent
 {
 
     public int num_threads;
@@ -25,6 +26,8 @@ public class Frontier
     private BlockingQueue<ObjExtractedLink>[] to_serve;
     private PriorityBlockingQueue<ObjPQueue>[] queues;
     private HashMap<String, Integer>[] attended_websites;
+
+    private ShutdownThread fShutdownThread;
 
     public Frontier(int num_threads, DB db_, Dashboard dash_)
     {
@@ -45,6 +48,17 @@ public class Frontier
             queues[i] = new PriorityBlockingQueue<ObjPQueue>(100000);
             attended_websites[i] = new HashMap<String, Integer>();
         }
+
+        //For interrupt
+        fShutdownThread = new ShutdownThread(this);
+        Runtime.getRuntime().addShutdownHook(fShutdownThread);
+    }
+
+    @Override
+    public void shutdown()
+    {
+        // code to cleanly shutdown your Parent instance.
+        System.out.println("Frontier Exit");
     }
 
     public void push_to_serve(ObjExtractedLink extracted_links[], int thread_id)
@@ -84,7 +98,6 @@ public class Frontier
 
     public void distribute()
     {
-        Runtime.getRuntime().addShutdownHook(new RunWhenShuttingDown());
         try
         {
             System.out.println("Frontier Started");
@@ -194,22 +207,5 @@ public class Frontier
     public void load_to_crawl()
     {
         System.out.println("Wait for loading To crawl links");
-    }
-
-    public class RunWhenShuttingDown extends Thread
-    {
-        public void run()
-        {
-//            System.out.println("Control-C caught. Shutting down...");
-            keepOn = false;
-            try
-            {
-                Thread.sleep(5000);
-            }
-            catch (InterruptedException e)
-            {
-                e.printStackTrace();
-            }
-        }
     }
 }
