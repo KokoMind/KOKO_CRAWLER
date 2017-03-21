@@ -55,7 +55,7 @@ public class Worker extends Thread implements IShutdownThreadParent
                     continue;
                 }
                 System.out.println("Downloading");
-                ObjDownloaded obj_d = null;//Fetcher.fetch(obj_pq.url);
+                ObjDownloaded obj_d = Fetcher.fetch(obj_pq.url);
                 if (obj_d == null)
                 {
                     this.refused++;
