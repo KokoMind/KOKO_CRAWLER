@@ -1,6 +1,3 @@
-package com.koko.crawler;
-
-
 public class ObjDownloaded
 {
     public ObjLink links[];

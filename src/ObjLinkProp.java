@@ -1,6 +1,3 @@
-package com.koko.crawler;
-
-
 public class ObjLinkProp
 {
     public int out_links;

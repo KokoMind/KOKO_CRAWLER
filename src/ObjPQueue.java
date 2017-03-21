@@ -1,5 +1,3 @@
-package com.koko.crawler;
-
 public class ObjPQueue implements Comparable<ObjPQueue>
 {
     public String url;

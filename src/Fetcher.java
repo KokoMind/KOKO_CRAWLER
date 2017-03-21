@@ -1,5 +1,3 @@
-package com.koko.crawler;
-
 import java.io.UnsupportedEncodingException;
 import java.net.*;
 import java.nio.charset.Charset;

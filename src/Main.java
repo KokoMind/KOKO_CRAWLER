@@ -1,7 +1,3 @@
-package com.koko.crawler;
-
-import com.koko.crawler.Crawl;
-
 import java.io.IOException;
 
 public class Main

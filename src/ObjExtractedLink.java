@@ -1,6 +1,3 @@
-package com.koko.crawler;
-
-
 public class ObjExtractedLink
 {
     public ObjLink link;

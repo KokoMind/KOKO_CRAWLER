@@ -1,6 +1,3 @@
-package com.koko.crawler;
-
-
 public class ObjThreadProp
 {
     public int crawled = 0;

@@ -1,5 +1,3 @@
-package com.koko.crawler;
-
 public class Worker extends Thread implements IShutdownThreadParent
 {
 

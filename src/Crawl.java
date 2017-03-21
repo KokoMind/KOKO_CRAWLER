@@ -1,5 +1,3 @@
-package com.koko.crawler;
-
 import java.io.IOException;
 
 public class Crawl
