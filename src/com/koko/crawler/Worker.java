@@ -15,6 +15,7 @@ public class Worker extends Thread
     private Dashboard dash;
     private int crawled = 0;
     private int refused = 0;
+    private volatile boolean keepOn = true;
 
     public Worker(int thread_id, String thread_name, Frontier front, DB db_, Dashboard dash_)
     {
@@ -28,7 +29,7 @@ public class Worker extends Thread
 
     public void run()
     {
-
+        Runtime.getRuntime().addShutdownHook(new RunWhenShuttingDown());
         try
         {
             while (true)
@@ -41,7 +42,7 @@ public class Worker extends Thread
                     continue;
                 }
                 System.out.println("Downloading");
-                ObjDownloaded obj_d = Fetcher.fetch(obj_pq.url);
+                ObjDownloaded obj_d = null;//Fetcher.fetch(obj_pq.url);
                 if (obj_d == null)
                 {
                     this.refused++;
@@ -73,6 +74,23 @@ public class Worker extends Thread
         {
             t = new Thread(this, name);
             t.start();
+        }
+    }
+
+    public class RunWhenShuttingDown extends Thread
+    {
+        public void run()
+        {
+//            System.out.println("Control-C caught. Shutting down...");
+            keepOn = false;
+            try
+            {
+                Thread.sleep(10);
+            }
+            catch (InterruptedException e)
+            {
+                e.printStackTrace();
+            }
         }
     }
 

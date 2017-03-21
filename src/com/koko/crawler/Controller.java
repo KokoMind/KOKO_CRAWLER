@@ -83,6 +83,7 @@ public class Controller
             ret[i] = new ObjExtractedLink(links[i], 100000, 100000, 1);
         }
         System.out.println("Seeds are ready");
+        System.out.println("Number of seeds = " + String.valueOf(ret.length));
         return ret;
     }
 
@@ -93,7 +94,7 @@ public class Controller
 //            System.out.println("Control-C caught. Shutting down...");
             try
             {
-                Thread.sleep(3000);
+                Thread.sleep(1000);
             }
             catch (InterruptedException e)
             {
