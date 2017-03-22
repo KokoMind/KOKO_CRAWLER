@@ -1,5 +1,8 @@
+import org.apache.commons.codec.digest.DigestUtils;
+
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.BlockingQueue;
@@ -19,6 +22,7 @@ public class Frontier implements IShutdownThreadParent
     private BlockingQueue<ObjExtractedLink>[] to_serve;
     private PriorityBlockingQueue<ObjPQueue>[] queues;
     private HashMap<String, Integer>[] attended_websites;
+    private HashSet<String> hasher;
 
     private int max_to_crawl = 100000;
 
@@ -43,6 +47,8 @@ public class Frontier implements IShutdownThreadParent
             queues[i] = new PriorityBlockingQueue<ObjPQueue>(max_to_crawl);
             attended_websites[i] = new HashMap<String, Integer>();
         }
+
+        hasher = new HashSet<String>();
 
         //For interrupt
         fShutdownThread = new ShutdownThread(this);
@@ -103,7 +109,7 @@ public class Frontier implements IShutdownThreadParent
 
 //                System.out.println("Serving a link");
 
-                if (db.hash(link.link.url) == -1 || link.link.dns == null)
+                if (!hasher.add(DigestUtils.sha1Hex(link.link.url)) || link.link.dns == null)
                     continue;
                 double value = calc_priority(link.prop);
 
@@ -142,7 +148,7 @@ public class Frontier implements IShutdownThreadParent
         {
             System.out.println("Serving a seed");
 
-            if (db.hash(link.link.url) == -1 || link.link.dns == null)
+            if (!hasher.add(DigestUtils.sha1Hex(link.link.url)) || link.link.dns == null)
                 continue;
             double value = calc_priority(link.prop);
 
