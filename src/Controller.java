@@ -3,6 +3,7 @@ public class Controller implements IShutdownThreadParent
 
     public int num_workers;
     public Worker workers[];
+    public WorkerSaver saver;
     public Frontier frontier;
     public DB db;
     public Dashboard dash;
@@ -23,6 +24,7 @@ public class Controller implements IShutdownThreadParent
         {
             workers[i] = new Worker(i, "Thread-" + String.valueOf(i), frontier, db, dash);
         }
+        saver = new WorkerSaver(-1,"Thread-Saver", frontier, db, dash);
         System.out.println("Workers Created");
 
         if (mode == 0) // Mode init
@@ -48,6 +50,7 @@ public class Controller implements IShutdownThreadParent
         {
             for (int i = 0; i < num_workers; i++)
                 workers[i].join();
+            saver.join();
             System.out.println("All Workers Exit");
         }
         catch (Exception e)
@@ -67,13 +70,13 @@ public class Controller implements IShutdownThreadParent
         {
             for (int i = 0; i < num_workers; i++)
                 workers[i].start();
-
-            //TODO Periodic Thread to save to_crawl
+            saver.start();
 
             frontier.distribute();
 
             for (int i = 0; i < num_workers; i++)
                 workers[i].join();
+            saver.join();
             System.out.println("All Workers Exit");
         }
         catch (Exception e)
