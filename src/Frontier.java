@@ -25,7 +25,7 @@ public class Frontier implements IShutdownThreadParent
     private HashMap<String, Integer>[] attended_websites;
     private HashSet<String> hasher;
 
-    private int max_to_crawl = 100000;
+    private int max_to_crawl = 1000000;
 
     private ShutdownThread fShutdownThread;
 
