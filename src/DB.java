@@ -7,30 +7,15 @@ import org.apache.commons.codec.digest.DigestUtils;
 public class DB
 {
 
-    private Connection connection_crawled = null;
-    private Statement statement_crawled = null;
-    private Connection connection_hasher = null;
-    private Statement statement_hasher = null;
-
     public DB()
     {
         try
         {
             // create a database connection
-            connection_hasher = DriverManager.getConnection("jdbc:sqlite::memory:");
-            statement_hasher = connection_hasher.createStatement();
-            statement_hasher.setQueryTimeout(30);
-            connection_crawled = DriverManager.getConnection("jdbc:sqlite:./crawled.db");
-            statement_crawled = connection_crawled.createStatement();
-            statement_crawled.setQueryTimeout(30);
-
-            String sql_create_table = "CREATE TABLE hasher (hash VARCHAR (42) NOT NULL PRIMARY KEY UNIQUE );";
-            statement_hasher.executeUpdate(sql_create_table);
-
         }
-        catch (SQLException e)
+        catch (Exception e)
         {
-            System.err.println(e.getMessage());
+            e.printStackTrace();
         }
     }
 
@@ -39,49 +24,22 @@ public class DB
     {
         try
         {
-            if (connection_hasher != null)
-                connection_hasher.close();
-            if (connection_crawled != null)
-                connection_crawled.close();
+
         }
-        catch (SQLException e)
+        catch (Exception e)
         {
             // connection close failed.
             System.err.println(e);
         }
     }
 
-    public int hash(String url)
+    public int cache()
     {
         try
         {
-            statement_hasher.executeUpdate("insert into hasher values('" + DigestUtils.sha1Hex(url) + "');");
             return 0;
         }
-        catch (SQLException e)
-        {
-            return -1;
-        }
-    }
-
-    public int cache_url(String url, String dns, String content, int thread_id)
-    {
-        try
-        {
-            String query = "INSERT INTO crawled (thread_id,url,dns,content,visited,last_visit,indexed) VALUES (?, ?, ?, ?, ?, ?, ?)";
-            PreparedStatement ps = connection_crawled.prepareStatement(query);
-            ps.setInt(1, thread_id);
-            ps.setString(2, url);
-            ps.setString(3, dns);
-            ps.setString(4, content);
-            ps.setString(5, LocalDateTime.now().toString());
-            ps.setString(6, LocalDateTime.now().toString());
-            ps.setInt(7, 0);
-            ps.addBatch();
-            ps.executeBatch();
-            return 0;
-        }
-        catch (SQLException e)
+        catch (Exception e)
         {
             e.printStackTrace();
             return -1;
