@@ -7,11 +7,12 @@ public class Crawl
     public int mode;
     public int num_workers;
     public String tocrawl_db_name = null;
+    public int port_number;
 
 
     public void run()
     {
-        Controller crawler_CEO = new Controller(num_workers, seeds, mode, tocrawl_db_name);
+        Controller crawler_CEO = new Controller(num_workers, seeds, mode, port_number, tocrawl_db_name);
         crawler_CEO.run();
     }
 
@@ -43,7 +44,10 @@ public class Crawl
                     return -1;
 
                 if (args[0].equals("init"))
+                {
                     mode = 0;
+                    port_number = Integer.parseInt(args[2]);
+                }
                 else if (args[0].equals("cont"))
                 {
                     mode = 1;
