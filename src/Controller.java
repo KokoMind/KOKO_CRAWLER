@@ -17,7 +17,7 @@ public class Controller implements IShutdownThreadParent
         num_workers = num_threads;
         workers = new Worker[num_threads];
         dash = new Dashboard();
-        db = new DB();
+        db = new DB(port_no);
         frontier = new Frontier(num_threads, db, dash);
 
         for (int i = 0; i < num_workers; i++)
