@@ -60,11 +60,7 @@ public class Worker extends Thread implements IShutdownThreadParent
                 System.out.println("Valid_Url__");
                 ObjExtractedLink extracted_links[] = ObjExtractedLink.setup_extracted_links(obj_d.links, obj_d.content.length(), obj_pq.value);
                 frontier.push_to_serve(extracted_links, id);
-                int ret = db.cache_url(obj_pq.url, obj_pq.dns, obj_d.content, id);
-                if (ret == -1)
-                {
-                    System.err.println("Cannot cache the link in the database");
-                }
+                frontier.push_to_save(new ObjPage(obj_pq.url,obj_pq.dns,obj_d.content,id), id);
             }
         }
         finally
