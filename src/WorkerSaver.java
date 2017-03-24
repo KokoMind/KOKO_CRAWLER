@@ -67,7 +67,7 @@ public class WorkerSaver extends Thread implements IShutdownThreadParent
                 ObjPage obj = frontier.pop_to_save();
                 docs.add(obj.record);
 
-                if (docs.size() >= 100)
+                if (docs.size() >= 1000)
                 {
                     crawled_col.insertMany(docs);
                     docs = new ArrayList<Document>();
