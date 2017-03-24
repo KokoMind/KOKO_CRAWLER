@@ -59,7 +59,7 @@ public class WorkerSaver extends Thread implements IShutdownThreadParent
         }
         System.out.println("a7a");
 
-        recored_every = 1000;
+        recored_every = 10000;
     }
 
     @Override
