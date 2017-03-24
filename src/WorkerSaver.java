@@ -87,7 +87,7 @@ public class WorkerSaver extends Thread implements IShutdownThreadParent
                         crawled += recored_every;
                         double dur = (System.currentTimeMillis() - start)/1000.0/60.0;
                         double tot_dur = (System.currentTimeMillis() - init_start)/1000.0/60.0;
-                        System.out.println("Time Taken For 1000 page : " + String.valueOf(dur) + " Minutes");
+                        System.out.println("Time Taken For 10000 page : " + String.valueOf(dur) + " Minutes");
                         System.out.println("ToTal Crawled : " + String.valueOf(crawled) + " url in " + String.valueOf(tot_dur) + " Minutes");
                         start = System.currentTimeMillis();
                     }
