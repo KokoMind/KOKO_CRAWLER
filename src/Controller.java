@@ -12,7 +12,7 @@ public class Controller implements IShutdownThreadParent
     private ShutdownThread fShutdownThread;
 
 
-    public Controller(int num_threads, String[] seeds, int mode, String to_crawl_db_name)
+    public Controller(int num_threads, String[] seeds, int mode, int port_no, String to_crawl_db_name)
     {
         num_workers = num_threads;
         workers = new Worker[num_threads];
@@ -24,7 +24,7 @@ public class Controller implements IShutdownThreadParent
         {
             workers[i] = new Worker(i, "Thread-" + String.valueOf(i), frontier, db, dash);
         }
-        saver = new WorkerSaver(-1,"Thread-Saver", frontier, db, dash);
+        saver = new WorkerSaver(-1, "Thread-Saver", frontier, dash, port_no);
         System.out.println("Workers Created");
 
         if (mode == 0) // Mode init
