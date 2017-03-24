@@ -41,23 +41,23 @@ public class Worker extends Thread implements IShutdownThreadParent
         {
             while (keepOn)
             {
-                System.out.println("Next_Url___");
+//                System.out.println("Next_Url___");
                 ObjPQueue obj_pq = frontier.get_url(id);
                 if (obj_pq == null)
                 {
-                    System.out.println("Empty_Queue");
+//                    System.out.println("Empty_Queue");
                     continue;
                 }
-                System.out.println("Downloading");
+//                System.out.println("Downloading");
                 ObjDownloaded obj_d = Fetcher.fetch(obj_pq.url);
                 if (obj_d == null)
                 {
                     this.refused++;
-                    System.out.println("Refused_Url");
+//                    System.out.println("Refused_Url");
                     continue;
                 }
                 this.crawled++;
-                System.out.println("Valid_Url__");
+//                System.out.println("Valid_Url__");
                 ObjExtractedLink extracted_links[] = ObjExtractedLink.setup_extracted_links(obj_d.links, obj_d.content.length(), obj_pq.value);
                 frontier.push_to_serve(extracted_links, id);
                 frontier.push_to_save(new ObjPage(obj_pq.url,obj_pq.dns,obj_d.content,id), id);
