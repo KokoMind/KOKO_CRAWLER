@@ -14,5 +14,7 @@
     <orderEntry type="library" name="commons-lang3-3.0" level="project" />
     <orderEntry type="library" name="commons-io-2.4" level="project" />
     <orderEntry type="library" name="commons-codec-1.101" level="project" />
+    <orderEntry type="library" name="urlcleaner-0.4.0" level="project" />
+    <orderEntry type="library" name="mongodb-driver-core-3.4.2" level="project" />
   </component>
 </module>
