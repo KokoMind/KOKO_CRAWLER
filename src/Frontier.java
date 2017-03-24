@@ -61,8 +61,6 @@ public class Frontier implements IShutdownThreadParent
     @Override
     public void shutdown()
     {
-        // code to cleanly shutdown your Parent instance.
-        System.out.println("Frontier Exit");
         keepOn = false;
     }
 
