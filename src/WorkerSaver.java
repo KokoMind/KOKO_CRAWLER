@@ -27,6 +27,7 @@ public class WorkerSaver extends Thread implements IShutdownThreadParent
     private MongoDatabase db;
     private MongoCollection<Document> crawled_col;
     private List<Document> docs;
+    private int recored_every;
 
     //Measure time
     private long start;
@@ -56,6 +57,8 @@ public class WorkerSaver extends Thread implements IShutdownThreadParent
             System.out.println(name);
         }
         System.out.println("a7a");
+
+        recored_every = 1000;
     }
 
     @Override
@@ -74,13 +77,15 @@ public class WorkerSaver extends Thread implements IShutdownThreadParent
                 ObjPage obj = frontier.pop_to_save();
                 docs.add(obj.record);
 
-                if (docs.size() >= 10)
+                if (docs.size() >= recored_every)
                 {
                     try
                     {
                         crawled_col.insertMany(docs);
+                        crawled += recored_every;
                         double dur = (System.currentTimeMillis() - start)/1000.0/60.0;
                         System.out.println("Time Taken For 1000 page : " + String.valueOf(dur) + " Minutes");
+                        System.out.println("ToTal Crawled : " + String.valueOf(crawled) + " url");
                         start = System.currentTimeMillis();
                     }
                     catch (MongoException e)
