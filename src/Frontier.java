@@ -184,7 +184,7 @@ public class Frontier implements IShutdownThreadParent
 
     private int get_turn()
     {
-        if (attended_websites[0].size() < 10)
+        if (attended_websites[num_threads-1].size() < 2)
         {
             turn += 1;
             turn %= num_threads;
