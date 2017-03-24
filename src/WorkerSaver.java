@@ -30,6 +30,7 @@ public class WorkerSaver extends Thread implements IShutdownThreadParent
     private int recored_every;
 
     //Measure time
+    private long init_start;
     private long start;
 
 
@@ -72,6 +73,7 @@ public class WorkerSaver extends Thread implements IShutdownThreadParent
         try
         {
             start = System.currentTimeMillis();
+            init_start = start;
             while (keepOn)
             {
                 ObjPage obj = frontier.pop_to_save();
@@ -84,8 +86,9 @@ public class WorkerSaver extends Thread implements IShutdownThreadParent
                         crawled_col.insertMany(docs);
                         crawled += recored_every;
                         double dur = (System.currentTimeMillis() - start)/1000.0/60.0;
+                        double tot_dur = (System.currentTimeMillis() - init_start)/1000.0/60.0;
                         System.out.println("Time Taken For 1000 page : " + String.valueOf(dur) + " Minutes");
-                        System.out.println("ToTal Crawled : " + String.valueOf(crawled) + " url");
+                        System.out.println("ToTal Crawled : " + String.valueOf(crawled) + " url in " + String.valueOf(tot_dur) + " Minutes");
                         start = System.currentTimeMillis();
                     }
                     catch (MongoException e)
