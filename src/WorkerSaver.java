@@ -1,4 +1,6 @@
+import com.mongodb.MongoBulkWriteException;
 import com.mongodb.MongoClient;
+import com.mongodb.MongoException;
 import com.mongodb.ServerAddress;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
@@ -16,7 +18,6 @@ public class WorkerSaver extends Thread implements IShutdownThreadParent
     private Frontier frontier;
     private Dashboard dash;
     private int crawled = 0;
-    private int refused = 0;
     private volatile boolean keepOn = true;
     private ShutdownThread fShutdownThread;
 
@@ -26,6 +27,10 @@ public class WorkerSaver extends Thread implements IShutdownThreadParent
     private MongoDatabase db;
     private MongoCollection<Document> crawled_col;
     private List<Document> docs;
+
+    //Measure time
+    private long start;
+
 
     public WorkerSaver(int thread_id, String thread_name, Frontier front, Dashboard dash_, int port_no)
     {
@@ -39,6 +44,7 @@ public class WorkerSaver extends Thread implements IShutdownThreadParent
         Runtime.getRuntime().addShutdownHook(fShutdownThread);
 
         //Initializing Mongodb
+        this.port_no = port_no;
         mongoClient = new MongoClient(new ServerAddress("localhost", port_no));
         db = mongoClient.getDatabase("crawled");
         crawled_col = db.getCollection("crawled");
@@ -62,14 +68,25 @@ public class WorkerSaver extends Thread implements IShutdownThreadParent
     {
         try
         {
+            start = System.currentTimeMillis();
             while (keepOn)
             {
                 ObjPage obj = frontier.pop_to_save();
                 docs.add(obj.record);
 
-                if (docs.size() >= 1000)
+                if (docs.size() >= 10)
                 {
-                    crawled_col.insertMany(docs);
+                    try
+                    {
+                        crawled_col.insertMany(docs);
+                        double dur = (System.currentTimeMillis() - start)/1000.0/60.0;
+                        System.out.println("Time Taken For 1000 page : " + String.valueOf(dur) + " Minutes");
+                        start = System.currentTimeMillis();
+                    }
+                    catch (MongoException e)
+                    {
+                        e.printStackTrace();
+                    }
                     docs = new ArrayList<Document>();
                 }
             }

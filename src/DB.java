@@ -1,91 +1,60 @@
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.List;
 
+import com.mongodb.MongoClient;
+import com.mongodb.MongoException;
+import com.mongodb.ServerAddress;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.bson.Document;
 
 public class DB
 {
 
-    public DB()
-    {
-        try
-        {
-            // create a database connection
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-        }
-    }
+    private int port_no;
 
-    @Override
-    public void finalize()
+    public DB(int no)
     {
-        try
-        {
-
-        }
-        catch (Exception e)
-        {
-            // connection close failed.
-            System.err.println(e);
-        }
-    }
-
-    public int cache()
-    {
-        try
-        {
-            return 0;
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-            return -1;
-        }
+        port_no = no;
     }
 
     public int cache_to_crawl(ObjPQueue[][] arr)
     {
-        Connection connection_tocrawl = null;
         try
         {
-            connection_tocrawl = DriverManager.getConnection("jdbc:sqlite:tocrawl-" + LocalDateTime.now() + ".db");
-//            connection_tocrawl = DriverManager.getConnection("jdbc:sqlite:db/tocrawl.db");
-            Statement statement_tocrawl = connection_tocrawl.createStatement();
-            statement_tocrawl.setQueryTimeout(30);
+            MongoClient mongoClient = new MongoClient(new ServerAddress("localhost", port_no));
 
-            String sql_create_table = "CREATE TABLE tocrawl ( id INTEGER NOT NULL PRIMARY KEY, url TEXT NOT NULL, dns VARCHAR (255) NOT NULL, value REAL NOT NULL);";
-            statement_tocrawl.executeUpdate(sql_create_table);
+            MongoDatabase db = mongoClient.getDatabase("tocrawl");
 
-            String query = "INSERT INTO tocrawl (url, dns, value) VALUES (?, ?, ?)";
-            PreparedStatement ps = connection_tocrawl.prepareStatement(query);
+            MongoCollection<Document> crawled_col = db.getCollection("tocrawl" + String.valueOf(System.currentTimeMillis()));
+
+            System.out.println("MONGOOO RRRRRRRRAAAAAAAAAHHHHHHHH");
+
+            List<Document> documents = new ArrayList<Document>();
+
             for (ObjPQueue[] array : arr)
             {
                 for (ObjPQueue link : array)
                 {
-                    ps.setString(1, link.url);
-                    ps.setString(2, link.dns);
-                    ps.setDouble(3, link.value);
-                    ps.addBatch();
+                    Document record = new Document();
+                    record.put("url", link.url);
+                    record.put("dns", link.dns);
+                    record.put("value", String.valueOf(link.value));
+                    documents.add(record);
                 }
             }
-            ps.executeBatch();
-            connection_tocrawl.close();
+
+            crawled_col.insertMany(documents);
+
+            mongoClient.close();
+
             return 0;
         }
-        catch (SQLException e)
+        catch (MongoException e)
         {
-            if (connection_tocrawl != null)
-                try
-                {
-                    connection_tocrawl.close();
-                }
-                catch (SQLException e1)
-                {
-                    e1.printStackTrace();
-                }
             e.printStackTrace();
             return -1;
         }
@@ -93,28 +62,6 @@ public class DB
 
     public ArrayList<ObjPQueue> get_to_crawl(String name, Integer num)
     {
-        try
-        {
-            Connection connection_tocrawl = DriverManager.getConnection("jdbc:sqlite:db/" + name);
-            Statement statement_tocrawl = connection_tocrawl.createStatement();
-            statement_tocrawl.setQueryTimeout(30);
-            System.out.println("Loading TOCRAWL links");
-            ResultSet rs = null;
-            ArrayList<ObjPQueue> ret = new ArrayList<ObjPQueue>();
-            if (num == null)
-                rs = statement_tocrawl.executeQuery("SELECT * FROM tocrawl;");
-            else
-                rs = statement_tocrawl.executeQuery("SELECT * FROM tocrawl where id < " + String.valueOf(num));
-            while (rs.next())
-            {
-                ret.add(new ObjPQueue(rs.getString("url"), rs.getString("dns"), rs.getDouble("value")));
-            }
-            return ret;
-        }
-        catch (SQLException e)
-        {
-            e.printStackTrace();
-            return null;
-        }
+        return null;
     }
 }
