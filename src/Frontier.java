@@ -20,6 +20,7 @@ public class Frontier implements IShutdownThreadParent
 
     public ObjThreadProp[] threads_prop;
     private BlockingQueue<ObjExtractedLink>[] to_serve;
+    private BlockingQueue<ObjPage>[] to_save;
     private PriorityBlockingQueue<ObjPQueue>[] queues;
     private HashMap<String, Integer>[] attended_websites;
     private HashSet<String> hasher;
@@ -37,6 +38,7 @@ public class Frontier implements IShutdownThreadParent
         //initialize all Arrays of the threads
         threads_prop = new ObjThreadProp[num_threads];
         to_serve = new BlockingQueue[num_threads];
+        to_save = new BlockingQueue[num_threads];
         queues = new PriorityBlockingQueue[num_threads];
         attended_websites = new HashMap[num_threads];
 
@@ -44,6 +46,7 @@ public class Frontier implements IShutdownThreadParent
         {
             threads_prop[i] = new ObjThreadProp();
             to_serve[i] = new ArrayBlockingQueue<ObjExtractedLink>(max_to_crawl);
+            to_save[i] = new ArrayBlockingQueue<ObjPage>(max_to_crawl);
             queues[i] = new PriorityBlockingQueue<ObjPQueue>(max_to_crawl);
             attended_websites[i] = new HashMap<String, Integer>();
         }
@@ -69,6 +72,24 @@ public class Frontier implements IShutdownThreadParent
         for (int i = 0; i < sz; i++)
         {
             to_serve[thread_id].offer(extracted_links[i]);
+        }
+    }
+
+    public void push_to_save(ObjPage page, int thread_id)
+    {
+        to_save[thread_id].offer(page);
+    }
+
+    public ObjPage pop_to_save()
+    {
+        while (true)
+        {
+            for (int i = 0; i < num_threads; i++)
+            {
+                ObjPage ret = to_save[i].poll();
+                if (ret != null)
+                    return ret;
+            }
         }
     }
 
