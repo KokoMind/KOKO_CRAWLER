@@ -248,7 +248,7 @@ public class Frontier implements IShutdownThreadParent
         ArrayList<ObjPQueue> ret = db.get_to_crawl(name, num);
         if (ret == null)
         {
-            System.err.println("Msh 3ref ageb linkat a7a");
+            System.err.println("Msh 3ref ageb linkat");
             System.exit(-1);
         }
         else
