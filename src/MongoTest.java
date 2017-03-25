@@ -32,7 +32,6 @@ public class MongoTest
         {
             System.out.println(name);
         }
-        System.out.println("a7a");
 
         List<Document> documents = new ArrayList<Document>();
 
