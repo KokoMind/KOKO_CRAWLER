@@ -57,8 +57,6 @@ public class WorkerSaver extends Thread implements IShutdownThreadParent
         {
             System.out.println(name);
         }
-        System.out.println("a7a");
-
         recored_every = 10000;
     }
 
